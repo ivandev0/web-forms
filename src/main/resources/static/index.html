@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create</title>
+    <link rel="stylesheet" href="styles/default.css">
+    <script src="scripts/main.js" type="module"></script>
+</head>
+<script type="text/html" id="template">
+    <td>
+        <input class="date" type="date">
+        <div class="error _hide"></div>
+    </td>
+    <td>
+        <div class="expenses" contenteditable="true"></div>
+        <div class="error _hide"></div>
+    </td>
+    <td>
+        <div class="comment" contenteditable="true"></div>
+        <div class="error _hide"></div>
+    </td>
+    <td>
+        <input class="delete" type="button" value="Delete">
+    </td>
+</script>
+<body>
+    <h3>Web Forms example</h3>
+    <form id="mainForm" method="post" enctype="application/x-www-form-urlencoded">
+        <table>
+            <thead>
+                <tr>
+                    <td>Date</td>
+                    <td>Sum</td>
+                    <td>Comment</td>
+                </tr>
+            </thead>
+            <tbody class="list">
+                <tr>
+                    <td>
+                        <input class="inputDate" name="date" type="date" required>
+                    </td>
+                    <td>
+                        <input class="inputExpenses" name="expenses" type="number" required>
+                    </td>
+                    <td>
+                        <input class="inputComment" name="comment" type="text" required>
+                    </td>
+                    <td><input type="submit" value="Сохранить"></td>
+
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</body>
