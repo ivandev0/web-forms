@@ -47,6 +47,10 @@ public class Item implements Serializable{
         this.comment = comment;
     }
 
+    public boolean isValid(){
+        return id != null && date != null && expenses != null && comment != null;
+    }
+
     @Override
     public String toString() {
         return "Item{" +

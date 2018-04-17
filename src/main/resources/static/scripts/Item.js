@@ -101,7 +101,7 @@ itemConstructorPrototype.commentChange = function () {
         this.commentError.classList.add('_hide');
     }
 
-    this.model.comment = this.comment.innerHTML;
+    this.model.comment = this.comment.innerText;
 
     return this;
 };
@@ -119,7 +119,7 @@ itemConstructorPrototype.expensesChange = function () {
         this.expensesError.classList.add('_hide');
     }
 
-    this.model.expenses = this.expenses.innerHTML;
+    this.model.expenses = this.expenses.innerText;
 
     return this;
 };
