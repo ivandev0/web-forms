@@ -1,8 +1,17 @@
 
 function openConnection(url, method, data) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open(method, url, false);
+    xmlHttp.open(method, url, true);
     xmlHttp.setRequestHeader('Content-type', 'application/json');
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState === XMLHttpRequest.DONE && xmlHttp.status === 200){
+
+        } else {
+            if(xmlHttp.responseText.includes("Not")){
+                alert("Ошибка на сервере. Пожалуйста попробуйте позже.")
+            }
+        }
+    };
     xmlHttp.send(JSON.stringify(data));
 }
 

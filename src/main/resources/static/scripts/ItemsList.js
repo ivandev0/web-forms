@@ -18,7 +18,7 @@ var listConstructorPrototype = ListConstructor.prototype;
 
 /**
  * @param {Object} itemData
- * @return {Object}
+ * @return {Object | null}
  */
 listConstructorPrototype.createItem = function (itemData) {
     var id;

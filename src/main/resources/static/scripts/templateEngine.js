@@ -1,9 +1,10 @@
 function getTemplateRootNode(scriptId) {
-    var tr = document.createElement('tr');
-    tr.classList.add('item');
+    var div = document.createElement('div');
     var scriptTag = document.getElementById(scriptId);
-    tr.innerHTML = scriptTag.innerHTML;
-    return tr;
+    div.innerHTML = scriptTag.innerHTML;
+    var result = div.children[0];
+    div.removeChild(result);
+    return result;
 }
 
 export default function templateEngine(data) {
@@ -14,11 +15,9 @@ export default function templateEngine(data) {
     var comment = root.querySelector('.comment');
     var deleteBut = root.querySelector('.delete');
 
-    var errors = root.getElementsByClassName('error');
-
     date.value = data.date;
-    expenses.innerHTML = data.expenses;
-    comment.innerHTML = data.comment;
+    expenses.value = data.expenses;
+    comment.value = data.comment;
 
     return {
         root: root,
@@ -26,6 +25,5 @@ export default function templateEngine(data) {
         expenses: expenses,
         comment: comment,
         deleteBut: deleteBut,
-        errors: errors
     };
 }

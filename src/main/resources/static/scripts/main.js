@@ -7,10 +7,10 @@ function init() {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("get", "http://localhost:8080/api/all", true);
     xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState === 4 && xmlHttp.status === 200){
+        if (xmlHttp.readyState === XMLHttpRequest.DONE && xmlHttp.status === 200){
             if(xmlHttp.responseText !== "[]"){
                 for(var i = 0; i < JSON.parse(xmlHttp.responseText).length; i++){
-                    //console.log(JSON.stringify(JSON.parse(xmlHttp.responseText)[0]));
+                    //console.log(JSON.stringify(JSON.parse(xmlHttp.responseText)[i]));
                     list.createItem(JSON.parse(xmlHttp.responseText)[i]);
                 }
             }
@@ -18,13 +18,14 @@ function init() {
     };
     xmlHttp.send(null);
 
-    document.getElementById('mainForm').addEventListener('submit', function (ev) {
+    document.forms.adder.addEventListener('submit', function (ev) {
         ev.preventDefault();
-        var item = {
-            date: document.querySelector('.inputDate').value,
-            expenses: document.querySelector('.inputExpenses').value,
-            comment: document.querySelector('.inputComment').value
-        };
+        var formData = new FormData(this);
+
+        var item = {};
+        formData.forEach(function(value, key){
+            item[key] = value;
+        });
         var itemWithId = list.createItem(item);
         createItem(itemWithId);
     });
