@@ -1,7 +1,39 @@
-.error{
-    background: red;
+/*.holder{
+    display: inline-block;
+    width: 20px;
+    height: 80%;
+    background: gray;
+    cursor: move;
+
+    vertical-align: middle;
+    margin: 0 auto;
+
 }
 
-._hide{
+.empty-holder{
+    display: inline-block;
+    width: 20px;
+    height: 100%;
+}*/
+
+.item{
+    cursor: move;
+    z-index: 1;
+    height: 25px;
+}
+
+/*.inputs{
+    display: inline-block;
+}*/
+
+.hide {
     display: none;
+}
+
+input:read-only{
+    cursor: move;
+}
+
+.transparent {
+    opacity: 0 ;
 }

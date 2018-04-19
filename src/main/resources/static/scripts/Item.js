@@ -4,7 +4,6 @@ import {deleteItem, updateItem} from './dataBaseEngine.js';
 /**
  * @param itemData
  * @constructor
- * @return {null}
  */
 export default function ItemConstructor(itemData) {
     var templateResult = templateEngine(itemData);
@@ -14,6 +13,8 @@ export default function ItemConstructor(itemData) {
     this.expenses = templateResult.expenses;
     this.comment = templateResult.comment;
     this.delete = templateResult.deleteBut;
+    this.change = templateResult.changeBut;
+    this.save = templateResult.saveBut;
 
     this.model = {
         id : itemData.id,
@@ -26,6 +27,8 @@ export default function ItemConstructor(itemData) {
     this.expenses.addEventListener('input', this);
     this.comment.addEventListener('input', this);
     this.delete.addEventListener('click', this);
+    this.change.addEventListener('click', this);
+    this.save.addEventListener('click', this);
 }
 
 var itemConstructorPrototype = ItemConstructor.prototype;
@@ -48,31 +51,52 @@ itemConstructorPrototype.handleEvent = function (e) {
             if(e.target === this.comment){
                 if(this.comment.checkValidity()){
                     this.model.comment = this.comment.value;
-                    updateItem(this.model);
+                } else {
+                    this.comment.reportValidity();
                 }
                 break;
             }
             if(e.target === this.expenses){
                 if(this.expenses.checkValidity()){
                     this.model.expenses = this.expenses.value;
-                    updateItem(this.model);
+                } else {
+                    this.expenses.reportValidity();
                 }
                 break;
             }
             if(e.target === this.date){
                 if(this.date.checkValidity()){
                     this.model.date = this.date.value;
-                    updateItem(this.model);
+                } else {
+
+                    this.date.reportValidity();
                 }
             }
 
             break;
         case 'click':
-            this.remove();
-            deleteItem(this.model);
-            break;
+            if(e.target === this.delete) {
+                this.remove();
+                deleteItem(this.model);
+                break;
+            }
+            if(e.target === this.change) {
+                this.delete.classList.remove('hide');
+                this.save.classList.remove('hide');
+                this.change.classList.add('hide');
+                this.date.readOnly = this.expenses.readOnly = this.comment.readOnly = false;
+                break;
+            }
+            if(e.target === this.save) {
+                this.delete.classList.add('hide');
+                this.save.classList.add('hide');
+                this.change.classList.remove('hide');
+                this.date.readOnly = this.expenses.readOnly = this.comment.readOnly = true;
+                updateItem(this.model);
+                break;
+            }
     }
-};
+}
 
 /**
  * @return {ItemConstructor}

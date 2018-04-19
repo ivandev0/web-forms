@@ -1,4 +1,5 @@
 import ItemConstructor from './Item.js'
+import {paste} from './sorting.js'
 var LIST_SELECTOR = '.list';
 var itemsIdIterator = 0;
 
@@ -18,9 +19,10 @@ var listConstructorPrototype = ListConstructor.prototype;
 
 /**
  * @param {Object} itemData
- * @return {Object | null}
+ * @param {Boolean} needSort
+ * @return {Object}
  */
-listConstructorPrototype.createItem = function (itemData) {
+listConstructorPrototype.createItem = function (itemData, needSort) {
     var id;
     if (typeof itemData.id !== 'undefined') {
         id = itemData.id;
@@ -37,13 +39,12 @@ listConstructorPrototype.createItem = function (itemData) {
         },
         itemData
     ));
-    if(item === null){
-        itemsIdIterator--;
-        return;
-    }
     this.items.push(item);
-
-    item.render(this.list);
+    if(!needSort){
+        item.render(this.list);
+    } else {
+        paste(item);
+    }
 
     this.list.addEventListener('remove', this);
 

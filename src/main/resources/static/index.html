@@ -8,22 +8,43 @@
 </head>
 <script type="text/html" id="template">
     <div class="item">
-        <form class="item-data">
-            <input class="date" name="date" type="date" title="Дата" required>
-            <input class="expenses" name="expenses" type="number" placeholder="Expenses" required>
-            <input class="comment" name="comment" type="text" placeholder="Comment" required>
-            <input class="delete" type="button" value="Delete">
+        <form class="item_form">
+            <div class="item_data">
+                <div class="holder"></div>
+                <div class="inputs">
+                    <input class="item_date" name="date" type="date" title="Дата" required readonly>
+                    <input class="item_expenses" name="expenses" type="number" placeholder="Expenses" required readonly>
+                    <input class="item_comment" name="comment" type="text" placeholder="Comment" required readonly>
+                    <input class="item_delete hide" type="button" value="Delete">
+                    <input class="item_change" type="button" value="Change">
+                    <input class="item_save hide" type="button" value="Save">
+                </div>
+            </div>
         </form>
     </div>
 </script>
 <body>
     <h3>Web Forms example</h3>
-    <form name="adder">
-        <input class="inputDate" name="date" type="date" title="Дата" required>
-        <input class="inputExpenses" name="expenses" type="number" placeholder="Expenses" required>
-        <input class="inputComment" name="comment" type="text" placeholder="Comment" required>
-        <input type="submit" value="Сохранить">
-    </form>
+    <div class="adder">
+        <form name="adder_form">
+            <div class="item-data">
+                <div class="empty-holder"></div>
+                <div class="inputs">
+                    <input class="adder_date" name="date" type="date" title="Дата" required>
+                    <input class="adder_expenses" name="expenses" type="number" placeholder="Expenses" required>
+                    <input class="adder_comment" name="comment" type="text" placeholder="Comment" required>
+                    <input type="submit" value="Сохранить">
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div>
+        Sort By
+        <input class="sort-date" type="button" value="Date">
+        <input class="sort-expenses" type="button" value="Expenses">
+    </div>
+    <hr>
     <div class="list">
 
     </div>
