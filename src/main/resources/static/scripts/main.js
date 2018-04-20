@@ -1,6 +1,6 @@
 import ListConstructor from './ItemsList.js'
 import {createItem} from "./dataBaseEngine.js";
-import {changeDateSort} from "./sorting.js"
+import {changeDateSort, changeExpensesSort} from "./sorting.js"
 import DragManagerConstructor from './dragManager.js'
 
 function init() {
@@ -46,6 +46,9 @@ function init() {
     });
     document.querySelector('.sort-date').onclick = function () {
         changeDateSort();
+    };
+    document.querySelector('.sort-expenses').onclick = function () {
+        changeExpensesSort();
     };
 
 

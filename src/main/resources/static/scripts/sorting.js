@@ -15,6 +15,14 @@ export function changeDateSort() {
     }
     sort();
 }
+export function changeExpensesSort() {
+    if(currentSort === 'ed'){
+        currentSort = 'eu';
+    } else {
+        currentSort = 'ed';
+    }
+    sort();
+}
 
 export function paste(item) {
     var list = document.querySelector('.list');
@@ -27,7 +35,7 @@ export function paste(item) {
 
     if(currentSort === 'dd') {
         while ((node = node.nextSibling)) {
-            var date = node.getElementsByClassName('item_date')[0];
+            var date = node.querySelector('.item_date');
             var itemDate = item.root.querySelector('.item_date');
             if (new Date(itemDate.value).getTime() >= new Date(date.value).getTime()) {
                 document.querySelector('.list').insertBefore(item.root, node);
@@ -37,9 +45,29 @@ export function paste(item) {
         }
     } else if(currentSort === 'du'){
         while ((node = node.nextSibling)) {
-            var date = node.getElementsByClassName('item_date')[0];
+            var date = node.querySelector('.item_date');
             var itemDate = item.root.querySelector('.item_date');
             if (new Date(itemDate.value).getTime() <= new Date(date.value).getTime()) {
+                document.querySelector('.list').insertBefore(item.root, node);
+                return;
+            }
+            document.querySelector('.list').appendChild(item.root);
+        }
+    } else if(currentSort === 'ed'){
+        while ((node = node.nextSibling)) {
+            var expenses = node.querySelector('.item_expenses');
+            var itemExpenses = item.root.querySelector('.item_expenses');
+            if (Number.parseFloat(itemExpenses.value) >= Number.parseFloat(expenses.value)) {
+                document.querySelector('.list').insertBefore(item.root, node);
+                return;
+            }
+            document.querySelector('.list').appendChild(item.root);
+        }
+    } else if(currentSort === 'eu'){
+        while ((node = node.nextSibling)) {
+            var expenses = node.querySelector('.item_expenses');
+            var itemExpenses = item.root.querySelector('.item_expenses');
+            if (Number.parseFloat(itemExpenses.value) <= Number.parseFloat(expenses.value)) {
                 document.querySelector('.list').insertBefore(item.root, node);
                 return;
             }
@@ -62,15 +90,27 @@ export function sort() {
 
     if(currentSort === 'dd') {
         itemsArr.sort(function(a, b) {
-            var dateA = new Date(a.getElementsByClassName('item_date')[0].value).getTime();
-            var dateB = new Date(b.getElementsByClassName('item_date')[0].value).getTime();
+            var dateA = new Date(a.querySelector('.item_date').value).getTime();
+            var dateB = new Date(b.querySelector('.item_date').value).getTime();
             return (dateA < dateB ? 1 : -1);
         });
     } else if(currentSort === 'du'){
         itemsArr.sort(function(a, b) {
-            var dateA = new Date(a.getElementsByClassName('item_date')[0].value).getTime();
-            var dateB = new Date(b.getElementsByClassName('item_date')[0].value).getTime();
+            var dateA = new Date(a.querySelector('.item_date').value).getTime();
+            var dateB = new Date(b.querySelector('.item_date').value).getTime();
             return (dateA > dateB ? 1 : -1);
+        });
+    } else if(currentSort === 'ed'){
+        itemsArr.sort(function(a, b) {
+            var expA = Number.parseFloat(a.querySelector('.item_expenses').value);
+            var expB = Number.parseFloat(b.querySelector('.item_expenses').value);
+            return (expA < expB ? 1 : -1);
+        });
+    } else if(currentSort === 'eu'){
+        itemsArr.sort(function(a, b) {
+            var expA = Number.parseFloat(a.querySelector('.item_expenses').value);
+            var expB = Number.parseFloat(b.querySelector('.item_expenses').value);
+            return (expA > expB ? 1 : -1);
         });
     }
 
