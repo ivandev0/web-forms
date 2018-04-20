@@ -1,6 +1,6 @@
 import ItemConstructor from './Item.js'
 import {paste} from './sorting.js'
-var LIST_SELECTOR = '.list';
+const LIST_SELECTOR = '.list';
 var itemsIdIterator = 0;
 
 /**
@@ -23,7 +23,7 @@ var listConstructorPrototype = ListConstructor.prototype;
  * @return {Object}
  */
 listConstructorPrototype.createItem = function (itemData, needSort) {
-    var id;
+    let id;
     if (typeof itemData.id !== 'undefined') {
         id = itemData.id;
         if (id > itemsIdIterator) {
@@ -33,7 +33,7 @@ listConstructorPrototype.createItem = function (itemData, needSort) {
         id = ++itemsIdIterator;
     }
 
-    var item = new ItemConstructor(Object.assign(
+    let item = new ItemConstructor(Object.assign(
         {
             id: id,
         },
@@ -53,13 +53,13 @@ listConstructorPrototype.createItem = function (itemData, needSort) {
 
 /**
  * @param {Number} itemId
- * @return {Item|null}
+ * @return {ItemConstructor | null}
  * @private
  */
 listConstructorPrototype.getItemById = function (itemId) {
-    var items = this.items;
+    let items = this.items;
 
-    for (var i = items.length; i-- ;) {
+    for (let i = items.length; i-- ;) {
         if (items[i].model.id === itemId) {
             return items[i];
         }
@@ -77,12 +77,15 @@ listConstructorPrototype.handleEvent = function(e){
     }
 };
 
-listConstructorPrototype.onItemRemove = function (event) {
-    var itemComponent = this.getItemById(event.detail.id);
+/**
+ * @param {CustomEvent} e
+ */
+listConstructorPrototype.onItemRemove = function (e) {
+    let item = this.getItemById(e.detail.id);
 
-    if (itemComponent) {
-        var itemComponentIndex = this.items.indexOf(itemComponent);
-        this.items.splice(itemComponentIndex, 1);
+    if (item) {
+        let itemIndex = this.items.indexOf(item);
+        this.items.splice(itemIndex, 1);
     }
 
     return this;

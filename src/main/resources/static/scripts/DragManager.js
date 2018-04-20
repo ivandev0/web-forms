@@ -9,18 +9,10 @@ export default function DragManagerConstructor() {
      *   avatar - аватар
      *   downX/downY - координаты, на которых был mousedown
      *   shiftX/shiftY - относительный сдвиг курсора от угла элемента
+     *   next/prev - соседний элемент
      * }
      */
-    this.dragObject = {
-        elem: null,
-        avatar: null,
-        downX: 0,
-        downY: 0,
-        shiftX: 0,
-        shiftY: 0,
-        next: null,
-        prev: null
-    };
+    this.dragObject = {};
 
 }
 
@@ -28,14 +20,14 @@ var dragManagerPrototype = DragManagerConstructor.prototype;
 
 /**
  *
- * @param e
+ * @param {MouseEvent} e
  */
 dragManagerPrototype.onMouseDown = function (e) {
     if (e.which !== 1) { // если клик правой кнопкой мыши
         return; // то он не запускает перенос
     }
 
-    var elem = e.target.closest('.item');
+    let elem = e.target.closest('.item');
 
     if (!elem) return; // не нашли, клик вне draggable-объекта
 
@@ -51,14 +43,14 @@ dragManagerPrototype.onMouseDown = function (e) {
 
 /**
  *
- * @param e
+ * @param {MouseEvent} e
  */
 dragManagerPrototype.onMouseMove = function (e) {
     if (!this.dragObject.elem) return; // элемент не зажат
 
     if (!this.dragObject.avatar) { // если перенос не начат...
-        var moveX = e.pageX - this.dragObject.downX;
-        var moveY = e.pageY - this.dragObject.downY;
+        let moveX = e.pageX - this.dragObject.downX;
+        let moveY = e.pageY - this.dragObject.downY;
 
         // если мышь передвинулась в нажатом состоянии недостаточно далеко
         if (Math.abs(moveX) < 3 && Math.abs(moveY) < 3) {
@@ -66,7 +58,7 @@ dragManagerPrototype.onMouseMove = function (e) {
         }
 
         // начинаем перенос
-        this.dragObject.avatar = this.createAvatar(e); // создать аватар
+        this.dragObject.avatar = this.createAvatar(); // создать аватар
         if (!this.dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
             this.dragObject = {};
             return;
@@ -74,11 +66,11 @@ dragManagerPrototype.onMouseMove = function (e) {
 
         // аватар создан успешно
         // создать вспомогательные свойства shiftX/shiftY
-        var coords = this.getCoords(this.dragObject.elem);
+        let coords = this.getCoords(this.dragObject.elem);
         this.dragObject.shiftX = this.dragObject.downX - coords.left;
         this.dragObject.shiftY = this.dragObject.downY - coords.top;
 
-        this.startDrag(e); // отобразить начало переноса
+        this.startDrag(); // отобразить начало переноса
     }
 
     //отключаем выделение при перемещении
@@ -89,23 +81,26 @@ dragManagerPrototype.onMouseMove = function (e) {
     this.dragObject.avatar.style.left = e.pageX - this.dragObject.shiftX + 'px';
     this.dragObject.avatar.style.top = e.pageY - this.dragObject.shiftY + 'px';
 
-
-    if(this.dragObject.prev.nodeType === 1
-        && this.dragObject.avatar.getBoundingClientRect().top < this.dragObject.prev.getBoundingClientRect().top){
-        //swap
-        document.querySelector('.list').insertBefore(this.dragObject.elem, this.dragObject.prev);
-        this.dragObject.next = this.dragObject.elem.nextSibling;
-        this.dragObject.prev = this.dragObject.elem.previousSibling;
-
+    //переместить исходный обуект если он поднялся выше/ниже соседа
+    let avatarCoords = this.getCoords(this.dragObject.avatar);
+    if(this.dragObject.prev && this.dragObject.prev.nodeType === 1){
+        let prevCoords = this.getCoords(this.dragObject.prev);
+        if(avatarCoords.top < prevCoords.top) {
+            //swap
+            document.querySelector('.list').insertBefore(this.dragObject.elem, this.dragObject.prev);
+            this.dragObject.next = this.dragObject.elem.nextSibling;
+            this.dragObject.prev = this.dragObject.elem.previousSibling;
+        }
     }
 
-    if(this.dragObject.next && this.dragObject.next.nodeType === 1
-        && this.dragObject.avatar.getBoundingClientRect().bottom > this.dragObject.next.getBoundingClientRect().bottom){
-        //swap
-        document.querySelector('.list').insertBefore(this.dragObject.elem, this.dragObject.next.nextSibling);
-        this.dragObject.next = this.dragObject.elem.nextSibling;
-        this.dragObject.prev = this.dragObject.elem.previousSibling;
-
+    if(this.dragObject.next && this.dragObject.next.nodeType === 1){
+        let nextCoords = this.getCoords(this.dragObject.next);
+        if(avatarCoords.bottom > nextCoords.bottom) {
+            //swap
+            document.querySelector('.list').insertBefore(this.dragObject.elem, this.dragObject.next.nextSibling);
+            this.dragObject.next = this.dragObject.elem.nextSibling;
+            this.dragObject.prev = this.dragObject.elem.previousSibling;
+        }
     }
 
     return false;
@@ -113,11 +108,11 @@ dragManagerPrototype.onMouseMove = function (e) {
 
 /**
  *
- * @param e
+ * @param {MouseEvent} e
  */
 dragManagerPrototype.onMouseUp = function (e) {
     if (this.dragObject.avatar) { // если перенос идет
-        this.finishDrag(e);
+        this.finishDrag();
     }
 
     // перенос либо не начинался, либо завершился
@@ -125,66 +120,41 @@ dragManagerPrototype.onMouseUp = function (e) {
     this.dragObject = {};
 };
 
-/**
- *
- * @param e
- */
-dragManagerPrototype.createAvatar = function (e) {
+dragManagerPrototype.createAvatar = function () {
     // запомнить старые свойства, чтобы вернуться к ним при отмене переноса
-    var avatar = this.dragObject.elem.cloneNode(true);
-    /*var old = {
-        parent: avatar.parentNode,
-        nextSibling: avatar.nextSibling,
-        position: avatar.position || '',
-        left: avatar.left || '',
-        top: avatar.top || '',
-        zIndex: avatar.zIndex || ''
-    };*/
-
-    // функция для отмены переноса
-    /*avatar.rollback = function() {
-        old.parent.insertBefore(avatar, old.nextSibling);
-        avatar.style.position = old.position;
-        avatar.style.left = old.left;
-        avatar.style.top = old.top;
-        avatar.style.zIndex = old.zIndex
-    };*/
-
-    return avatar;
+    return this.dragObject.elem.cloneNode(true);
 };
 
-dragManagerPrototype.getCoords = function (elem) { // кроме IE8-
-    var box = elem.getBoundingClientRect();
+/**
+ *
+ * @param elem
+ * @returns {{top: number, bottom: number, left: number}}
+ */
+dragManagerPrototype.getCoords = function (elem) {
+    let box = elem.getBoundingClientRect();
 
+    //pageXOffset, pageYOffset - возвращает велечину прокрутки страницы
     return {
         top: box.top + pageYOffset,
+        bottom: box.bottom + pageYOffset,
         left: box.left + pageXOffset
     };
 
 };
 
-/**
- *
- * @param e
- */
-dragManagerPrototype.startDrag = function(e) {
+dragManagerPrototype.startDrag = function() {
     this.dragObject.elem.classList.add('transparent');
-    var avatar = this.dragObject.avatar;
+    let avatar = this.dragObject.avatar;
 
     // инициировать начало переноса
     document.body.appendChild(avatar);
-    avatar.style.zIndex = 9999;
+    avatar.style.zIndex = '999';
     avatar.style.position = 'absolute';
 };
 
-/**
- *
- * @param e
- */
-dragManagerPrototype.finishDrag = function(e) {
+dragManagerPrototype.finishDrag = function() {
     document.body.removeChild(this.dragObject.avatar);
     this.dragObject.elem.classList.remove('transparent');
-    //var dropElem = findDroppable(e);
 
     /*if (!dropElem) {
         this.onDragCancel(this.dragObject);

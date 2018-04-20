@@ -6,7 +6,7 @@ import {deleteItem, updateItem} from './dataBaseEngine.js';
  * @constructor
  */
 export default function ItemConstructor(itemData) {
-    var templateResult = templateEngine(itemData);
+    let templateResult = templateEngine(itemData);
 
     this.root = templateResult.root;
     this.date = templateResult.date;
@@ -15,6 +15,7 @@ export default function ItemConstructor(itemData) {
     this.delete = templateResult.deleteBut;
     this.change = templateResult.changeBut;
     this.save = templateResult.saveBut;
+    this.form = templateResult.form;
 
     this.model = {
         id : itemData.id,
@@ -23,12 +24,9 @@ export default function ItemConstructor(itemData) {
         comment: itemData.comment
     };
 
-    this.date.addEventListener('input', this);
-    this.expenses.addEventListener('input', this);
-    this.comment.addEventListener('input', this);
     this.delete.addEventListener('click', this);
     this.change.addEventListener('click', this);
-    this.save.addEventListener('click', this);
+    this.form.addEventListener('submit', this);
 }
 
 var itemConstructorPrototype = ItemConstructor.prototype;
@@ -47,33 +45,6 @@ itemConstructorPrototype.render = function (parent) {
  */
 itemConstructorPrototype.handleEvent = function (e) {
     switch (e.type) {
-        case 'input':
-            if(e.target === this.comment){
-                if(this.comment.checkValidity()){
-                    this.model.comment = this.comment.value;
-                } else {
-                    this.comment.reportValidity();
-                }
-                break;
-            }
-            if(e.target === this.expenses){
-                if(this.expenses.checkValidity()){
-                    this.model.expenses = this.expenses.value;
-                } else {
-                    this.expenses.reportValidity();
-                }
-                break;
-            }
-            if(e.target === this.date){
-                if(this.date.checkValidity()){
-                    this.model.date = this.date.value;
-                } else {
-
-                    this.date.reportValidity();
-                }
-            }
-
-            break;
         case 'click':
             if(e.target === this.delete) {
                 this.remove();
@@ -87,23 +58,29 @@ itemConstructorPrototype.handleEvent = function (e) {
                 this.date.readOnly = this.expenses.readOnly = this.comment.readOnly = false;
                 break;
             }
-            if(e.target === this.save) {
-                this.delete.classList.add('hide');
-                this.save.classList.add('hide');
-                this.change.classList.remove('hide');
-                this.date.readOnly = this.expenses.readOnly = this.comment.readOnly = true;
-                updateItem(this.model);
-                break;
-            }
+            break;
+        case 'submit':
+            e.preventDefault();
+
+            this.delete.classList.add('hide');
+            this.save.classList.add('hide');
+            this.change.classList.remove('hide');
+            this.date.readOnly = this.expenses.readOnly = this.comment.readOnly = true;
+
+            this.model.date = this.date.value;
+            this.model.comment = this.comment.value;
+            this.model.expenses = this.expenses.value;
+            updateItem(this.model);
+            break;
     }
-}
+};
 
 /**
  * @return {ItemConstructor}
  */
 itemConstructorPrototype.remove = function () {
     this.root.parentNode.removeChild(this.root);
-    var event = new CustomEvent('remove',
+    let event = new CustomEvent('remove',
         {
             detail: {id: this.model.id}
         });
