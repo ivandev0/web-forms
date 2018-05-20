@@ -9,6 +9,6 @@ public class DefaultView {
     //redirect to external URL
     @GetMapping(value = "/")
     public String redirectExample() {
-        return "forward:/singIn.html";
+        return "forward:/identification.html";
     }
 }

@@ -23,19 +23,19 @@ var listConstructorPrototype = ListConstructor.prototype;
  * @return {Object}
  */
 listConstructorPrototype.createItem = function (itemData, needSort) {
-    let id;
-    if (typeof itemData.id !== 'undefined') {
-        id = itemData.id;
-        if (id > itemsIdIterator) {
-            itemsIdIterator = id;
+    let itemId;
+    if (typeof itemData.itemId !== 'undefined') {
+        itemId = itemData.itemId;
+        if (itemId > itemsIdIterator) {
+            itemsIdIterator = itemId;
         }
     } else {
-        id = ++itemsIdIterator;
+        itemId = ++itemsIdIterator;
     }
 
     let item = new ItemConstructor(Object.assign(
         {
-            id: id,
+            itemId: itemId,
         },
         itemData
     ));
@@ -60,7 +60,7 @@ listConstructorPrototype.getItemById = function (itemId) {
     let items = this.items;
 
     for (let i = items.length; i-- ;) {
-        if (items[i].model.id === itemId) {
+        if (items[i].model.itemId === itemId) {
             return items[i];
         }
     }
@@ -81,7 +81,7 @@ listConstructorPrototype.handleEvent = function(e){
  * @param {CustomEvent} e
  */
 listConstructorPrototype.onItemRemove = function (e) {
-    let item = this.getItemById(e.detail.id);
+    let item = this.getItemById(e.detail.itemId);
 
     if (item) {
         let itemIndex = this.items.indexOf(item);

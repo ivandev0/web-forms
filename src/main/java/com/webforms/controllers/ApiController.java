@@ -1,8 +1,10 @@
 package com.webforms.controllers;
 
-import com.webforms.Item;
-import com.webforms.UserRepository;
+import com.webforms.entities.Item;
+import com.webforms.ItemsTable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,40 +12,50 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/api")
 public class ApiController {
     @Autowired
-    UserRepository userRepository;
+    ItemsTable itemsTable;
 
     @PostMapping(path = "/add", consumes = "application/json")
-    public @ResponseBody String add(@RequestBody Item item){
+    public ResponseEntity add(@RequestBody Item item){
         //System.out.println(item);
         if(!item.isValid()){
-            return "Not Saved";
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("");
         }
-        userRepository.save(item);
-        return "Saved";
+        itemsTable.save(item);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("");
     }
 
     @PostMapping(path = "/delete")
-    public @ResponseBody String delete(@RequestBody Item item){
-        if(!item.isValid()){
-            return "Not Deleted";
-        }
-        userRepository.delete(item);
-        return "Deleted";
+    public ResponseEntity delete(@RequestBody String id){
+        itemsTable.deleteById(Long.parseLong(id));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("");
     }
 
     @PostMapping(path = "/update")
-    public @ResponseBody String update(@RequestBody Item item){
+    public ResponseEntity update(@RequestBody Item item){
         if(!item.isValid()){
-            return "Not Updated";
+            return ResponseEntity
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body("");
         }
-        userRepository.deleteById(item.getId());
-        userRepository.save(item);
-        return "Updated";
+        long id = itemsTable.findByItemIdAndUserId(item.getItemId(), item.getUserId()).getId();
+        item.setId(id);
+        itemsTable.save(item);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("");
     }
 
-    @GetMapping(path = "/all")
-    public @ResponseBody Iterable<Item> getAll(){
+    @PostMapping(path = "/all")
+    public @ResponseBody Iterable<Item> getAll(@RequestBody String userId){
         // This returns a JSON or XML with the users
-        return userRepository.findAllByOrderByDateDesc();
+        userId = userId.replaceAll("\"", "");
+        return itemsTable.findByUserIdOrderByDateDesc(Long.parseLong(userId));
     }
 }

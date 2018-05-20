@@ -1,9 +1,14 @@
 import ListConstructor from './ItemsList.js'
-import {createItem} from "./dataBaseEngine.js";
+import {createItem, logOut} from "./dataBaseEngine.js";
 import {changeDateSort, changeExpensesSort} from "./sorting.js"
 import DragManagerConstructor from './DragManager.js'
 
 function init() {
+    let userId = getCookie("userId");
+    if(!userId) {
+        document.location.href = "/";
+    }
+
     let dragManager = new DragManagerConstructor();
     document.addEventListener("mousedown", function (e) {
         dragManager.onMouseDown(e);
@@ -20,7 +25,7 @@ function init() {
     let list = new ListConstructor();
 
     let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("get", "http://localhost:8080/api/all", true);
+    xmlHttp.open("post", "api/all", true);
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState === XMLHttpRequest.DONE && xmlHttp.status === 200){
             if(xmlHttp.responseText !== "[]"){
@@ -31,7 +36,8 @@ function init() {
             }
         }
     };
-    xmlHttp.send(null);
+    xmlHttp.send(JSON.stringify(userId));
+
 
     document.querySelector('.adder_form').addEventListener('submit', function (ev) {
         ev.preventDefault();
@@ -42,6 +48,7 @@ function init() {
             item[key] = value;
         });
         let itemWithId = list.createItem(item, true);
+        itemWithId['userId'] = userId;
         createItem(itemWithId);
     });
     document.querySelector('.sort-date').onclick = function () {
@@ -51,6 +58,9 @@ function init() {
         changeExpensesSort();
     };
 
+    document.querySelector('.button').addEventListener('click', function () {
+        logOut();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', init);

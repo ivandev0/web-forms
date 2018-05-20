@@ -1,7 +1,8 @@
-package com.webforms;
+package com.webforms.entities;
 
 import javax.persistence.Entity;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.sql.Date;
@@ -10,7 +11,9 @@ import java.sql.Date;
 public class Item implements Serializable{
 
     @Id
+    @GeneratedValue
     Long id;
+    Long userId, itemId;
     Date date;
     Integer expenses;
     String comment;
@@ -21,6 +24,22 @@ public class Item implements Serializable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
     public Date getDate() {
@@ -48,14 +67,16 @@ public class Item implements Serializable{
     }
 
     public boolean isValid(){
-        return id != null && date != null && expenses != null && comment != null;
+        return itemId != null && date != null && expenses != null && comment != null && userId != null;
     }
 
     @Override
     public String toString() {
         return "Item{" +
                 "id=" + id +
-                ", date='" + date + '\'' +
+                ", userId=" + userId +
+                ", itemId=" + itemId +
+                ", date=" + date +
                 ", expenses=" + expenses +
                 ", comment='" + comment + '\'' +
                 '}';

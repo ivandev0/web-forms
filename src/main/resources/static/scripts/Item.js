@@ -19,6 +19,7 @@ export default function ItemConstructor(itemData) {
 
     this.model = {
         id : itemData.id,
+        itemId : itemData.itemId,
         date: itemData.date,
         expenses: itemData.expenses,
         comment: itemData.comment
@@ -48,7 +49,7 @@ itemConstructorPrototype.handleEvent = function (e) {
         case 'click':
             if(e.target === this.delete) {
                 this.remove();
-                deleteItem(this.model);
+                deleteItem(this.model.id);
                 break;
             }
             if(e.target === this.change) {
@@ -70,7 +71,10 @@ itemConstructorPrototype.handleEvent = function (e) {
             this.model.date = this.date.value;
             this.model.comment = this.comment.value;
             this.model.expenses = this.expenses.value;
-            updateItem(this.model);
+            updateItem(Object.assign(this.model, {
+                    userId: getCookie('userId')
+                }
+            ));
             break;
     }
 };
@@ -82,7 +86,7 @@ itemConstructorPrototype.remove = function () {
     this.root.parentNode.removeChild(this.root);
     let event = new CustomEvent('remove',
         {
-            detail: {id: this.model.id}
+            detail: {itemId: this.model.itemId}
         });
     this.root.dispatchEvent(event);  //пробрасывается по умолчанию наверх
     return this;
